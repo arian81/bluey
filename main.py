@@ -8,7 +8,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 import os
 
-ROLE = "1103919524216062012"
+ROLE = 1103919524216062012
 load_dotenv()
 
 logging.basicConfig(filename="logs.txt", level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
