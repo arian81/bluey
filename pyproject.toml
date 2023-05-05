@@ -1,0 +1,18 @@
+[project]
+name = "bluesky-bot"
+version = "0.1.0"
+description = "Add a short description here"
+authors = [
+    { name = "Arian Ahmadinejad", email = "ahmadinejadarian@gmail.com" }
+]
+dependencies = ["py-cord~=2.4.1", "sqlalchemy~=2.0.12", "psycopg2~=2.9.6", "python-dotenv~=1.0.0"]
+readme = "README.md"
+requires-python = ">= 3.8"
+license = { text = "MIT" }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
