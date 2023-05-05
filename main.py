@@ -8,7 +8,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 import os
 
-ROLE = "Admin"
+ROLE = "1103919524216062012"
 load_dotenv()
 
 logging.basicConfig(filename="logs.txt", level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -58,7 +58,7 @@ async def init(ctx):
     admin_found = False
 
     for role in ctx.author.roles:
-        if role.name == ROLE:
+        if role.id == ROLE:
             admin_found = True
             members = ctx.guild.members
             for member in members:
@@ -90,7 +90,7 @@ async def init(ctx):
 async def vip(ctx, member: discord.Member, enable: bool):
     admin_found = False
     for role in ctx.author.roles:
-        if role.name == ROLE:
+        if role.id == ROLE:
             admin_found = True
             session = Session()
             member = session.query(Member).filter(Member.discord_id == member.id).first()
@@ -110,7 +110,7 @@ async def vip(ctx, member: discord.Member, enable: bool):
 async def resumecv(ctx, member: discord.Member, enable: bool):
     admin_found = False
     for role in ctx.author.roles:
-        if role.name == ROLE:
+        if role.id == ROLE:
             admin_found = True
             session = Session()
             member = session.query(Member).filter(Member.discord_id == member.id).first()
