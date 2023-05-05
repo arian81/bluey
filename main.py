@@ -8,9 +8,6 @@ from discord.ext import commands
 from dotenv import load_dotenv
 import os
 
-
-# Discord bot token and PostgreSQL credentials
-# TOKEN = "MTA2NjYwNjIzNDEyOTY2MTk4Mw.G3-OC8.NfZiWMUHpyiREdDcL_YLw5KyQO66DhADU7l7XA"
 ROLE = "Admin"
 load_dotenv()
 
