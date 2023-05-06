@@ -55,7 +55,6 @@ async def on_ready():
     description="Initialize the database with all the members in the server",
 )
 async def init(ctx):
-    members = ctx.guild.members
     admin_found = False
 
     for role in ctx.author.roles:
@@ -176,8 +175,8 @@ async def adminconfig(ctx):
             admin_found = True
 
             session = Session()
-
-            for member in ctx.guild.members:
+            members = ctx.guild.members
+            for member in members:
                 for role in member.roles:
                     if role.id == VIP_ROLE_ID:
                         member = session.query(Member).filter(Member.discord_id == member.id).first()
