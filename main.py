@@ -8,7 +8,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 import os
 
-ROLE = 1103919524216062012
+ROLE = 1103847982836744273
 load_dotenv()
 
 logging.basicConfig(filename="logs.txt", level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -126,13 +126,13 @@ async def resumecv(ctx, member: discord.Member, enable: bool):
         await ctx.send("You don't have permission to do that")
 
 
-@bot.slash_command(name="waitlist", description="Check your placement on the waitlist")
+@bot.slash_command(name="waitlist", description="Check your placement on the waitlist", ephemeral=True)
 @commands.guild_only()
 async def waitlist(ctx):
     session = Session()
     member = session.query(Member).filter(Member.discord_id == ctx.author.id).first()
     if member is None:
-        await ctx.send("You are not in the database")
+        await ctx.send_response("You are not in the database", ephemeral=True)
     else:
         members = (
             session.query(Member)
@@ -143,7 +143,7 @@ async def waitlist(ctx):
         for i in members:
             print(i.discord_username)
         position = members.index(member) + 1
-        await ctx.send(f"You are number {position} on the waitlist")
+        await ctx.send_response(f"You are number {position} on the waitlist", ephemeral=True)
         logging.debug(f"{ctx.author.name} checked their position on the waitlist")
     session.close()
 
