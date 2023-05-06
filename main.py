@@ -97,10 +97,10 @@ async def vip(ctx, member: discord.Member, enable: bool):
             member.is_vip = enable
             session.commit()
             if enable:
-                await ctx.send_response(f"{member.discord_username} added to VIP list")
+                await ctx.send_response(f"<@{member.discord_id}> added to VIP list")
             else:
-                await ctx.send_response(f"{member.discord_username} removed from VIP list")
-            logging.debug(f"{ctx.author.name} added {member.discord_username} to VIP list")
+                await ctx.send_response(f"<@{member.discord_id}> removed from VIP list")
+            logging.debug(f"{ctx.author.name} added <@{member.discord_id}> to VIP list")
             session.close()
     if admin_found is False:
         await ctx.send_response("You don't have permission to do that")
@@ -117,10 +117,10 @@ async def resumecv(ctx, member: discord.Member, enable: bool):
             member.is_resumecv = enable
             session.commit()
             if enable:
-                await ctx.send_response(f"{member.discord_username} added to resume.cv list")
+                await ctx.send_response(f"<@{member.discord_id}> added to resume.cv list")
             else:
-                await ctx.send_response(f"{member.discord_username} removed from resume.cv list")
-            logging.debug(f"{ctx.author.name} added {member.discord_username} to resume.cv list")
+                await ctx.send_response(f"<@{member.discord_id}> removed from resume.cv list")
+            logging.debug(f"{ctx.author.name} added <@{member.discord_id}> to resume.cv list")
             session.close()
     if admin_found is False:
         await ctx.send_response("You don't have permission to do that")
@@ -159,10 +159,10 @@ async def invite(ctx, member: discord.Member, enable: bool):
             member.is_invited = enable
             session.commit()
             if enable:
-                await ctx.send_response(f"{member.discord_username} added to invited list")
+                await ctx.send_response(f"<@{member.discord_id}> added to invited list")
             else:
-                await ctx.send_response(f"{member.discord_username} removed from invited list")
-            logging.debug(f"{ctx.author.name} added {member.discord_username} to invited list")
+                await ctx.send_response(f"<@{member.discord_id}> removed from invited list")
+            logging.debug(f"{ctx.author.name} added <@{member.discord_id}> to invited list")
             session.close()
     if admin_found is False:
         await ctx.send_response("You don't have permission to do that")
