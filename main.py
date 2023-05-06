@@ -148,10 +148,21 @@ async def waitlist(ctx):
     session.close()
 
 
-@bot.slash_command(name="test", description="Test command")
-@commands.guild_only()
-async def test(ctx):
-    ctx.send_response(ctx.author.message_count)
+@bot.slash_command(name="invite", description="Set user as invited to bluesky")
+async def invite(ctx, member: discord.Member):
+    admin_found = False
+    for role in ctx.author.roles:
+        if role.id == ROLE:
+            admin_found = True
+            session = Session()
+            member = session.query(Member).filter(Member.discord_id == member.id).first()
+            member.is_invited = True
+            session.commit()
+            await ctx.send(f"{member.discord_username} added to invited list")
+            logging.debug(f"{ctx.author.name} added {member.discord_username} to invited list")
+            session.close()
+    if admin_found is False:
+        await ctx.send("You don't have permission to do that")
 
 
 @bot.event
