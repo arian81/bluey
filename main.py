@@ -131,6 +131,8 @@ async def waitlist(ctx):
     member = session.query(Member).filter(Member.discord_id == ctx.author.id).first()
     if member is None:
         await ctx.send_response("You are not in the database", ephemeral=True)
+    elif member.is_invited:
+        await ctx.send_response("You already have access to bluesky", ephemeral=True)
     else:
         members = (
             session.query(Member)
@@ -138,8 +140,6 @@ async def waitlist(ctx):
             .order_by(Member.join_date, desc(Member.message_count))
             .all()
         )
-        for i in members:
-            print(i.discord_username)
         position = members.index(member) + 1
         await ctx.send_response(f"You are number {position} on the waitlist", ephemeral=True)
         logging.debug(f"{ctx.author.name} checked their position on the waitlist")
