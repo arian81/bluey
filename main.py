@@ -10,6 +10,7 @@ import os
 MANAGER_ROLE_ID = 1103919524216062012
 VIP_ROLE_ID = 1100501016090267756
 BLUESKY_ROLE_ID = 1103599266187980900
+UNVERIFIED_ROLE_ID = 1102277585628581959
 load_dotenv()
 
 logging.basicConfig(filename="logs.txt", level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -128,6 +129,10 @@ async def resumecv(ctx, member: discord.Member, enable: bool):
 
 @bot.slash_command(name="waitlist", description="Check your placement on the waitlist", ephemeral=True)
 async def waitlist(ctx):
+    for role in ctx.author.roles:
+        if role.id == UNVERIFIED_ROLE_ID:
+            await ctx.send_response("You are not verified", ephemeral=True)
+            return
     session = Session()
     member = session.query(Member).filter(Member.discord_id == ctx.author.id).first()
     if member is None:
