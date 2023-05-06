@@ -179,12 +179,12 @@ async def adminconfig(ctx):
             for member in members:
                 for role in member.roles:
                     if role.id == VIP_ROLE_ID:
-                        member = session.query(Member).filter(Member.discord_id == member.id).first()
-                        member.is_vip = True
+                        vip_member = session.query(Member).filter(Member.discord_id == member.id).first()
+                        vip_member.is_vip = True
                         session.commit()
                     elif role.id == BLUESKY_ROLE_ID:
-                        member = session.query(Member).filter(Member.discord_id == member.id).first()
-                        member.is_invited = True
+                        bluesky_member = session.query(Member).filter(Member.discord_id == member.id).first()
+                        bluesky_member.is_invited = True
                         session.commit()
             session.close()
             await ctx.send_response("Magic is done")
