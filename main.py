@@ -16,7 +16,7 @@ logging.basicConfig(filename="logs.txt", level=logging.DEBUG, format="%(asctime)
 
 
 # SQLAlchemy database connection setup
-engine = create_engine(os.getenv("DATABASE_URL"), echo=True)
+engine = create_engine(os.getenv("PROD_DATABASE_URL"), echo=True)
 Session = sessionmaker(bind=engine)
 
 
@@ -234,4 +234,4 @@ async def on_message(message):
 
 
 # run the bot
-bot.run(os.getenv("TOKEN"))
+bot.run(os.getenv("PROD_TOKEN"))
