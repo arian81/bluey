@@ -168,6 +168,27 @@ async def invite(ctx, member: discord.Member, enable: bool):
         await ctx.send_response("You don't have permission to do that")
 
 
+@bot.slash_command(name="adminconfig", description="Magic command")
+async def adminconfig(ctx):
+    admin_found = False
+    for role in ctx.author.roles:
+        if role.id == ROLE:
+            admin_found = True
+
+            session = Session()
+
+            for member in ctx.guild.members:
+                for role in member.roles:
+                    if role.id == 1104250835329880167:
+                        member = session.query(Member).filter(Member.discord_id == member.id).first()
+                        member.is_vip = True
+                        session.commit()
+            session.close()
+            await ctx.send_response("Magic is done")
+    if admin_found is False:
+        await ctx.send_response("You don't have permission to do that")
+
+
 @bot.event
 async def on_member_join(member):
     session = Session()
