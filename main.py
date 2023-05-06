@@ -7,7 +7,9 @@ from sqlalchemy.exc import IntegrityError
 from dotenv import load_dotenv
 import os
 
-ROLE = 1103919524216062012
+MANAGER_ROLE_ID = 1103919524216062012
+VIP_ROLE_ID = 1100501016090267756
+BLUESKY_ROLE_ID = 1103599266187980900
 load_dotenv()
 
 logging.basicConfig(filename="logs.txt", level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -57,7 +59,7 @@ async def init(ctx):
     admin_found = False
 
     for role in ctx.author.roles:
-        if role.id == ROLE:
+        if role.id == MANAGER_ROLE_ID:
             admin_found = True
             members = ctx.guild.members
             for member in members:
@@ -89,7 +91,7 @@ async def init(ctx):
 async def vip(ctx, member: discord.Member, enable: bool):
     admin_found = False
     for role in ctx.author.roles:
-        if role.id == ROLE:
+        if role.id == MANAGER_ROLE_ID:
             admin_found = True
             session = Session()
             member = session.query(Member).filter(Member.discord_id == member.id).first()
@@ -109,7 +111,7 @@ async def vip(ctx, member: discord.Member, enable: bool):
 async def resumecv(ctx, member: discord.Member, enable: bool):
     admin_found = False
     for role in ctx.author.roles:
-        if role.id == ROLE:
+        if role.id == MANAGER_ROLE_ID:
             admin_found = True
             session = Session()
             member = session.query(Member).filter(Member.discord_id == member.id).first()
@@ -150,7 +152,7 @@ async def waitlist(ctx):
 async def invite(ctx, member: discord.Member, enable: bool):
     admin_found = False
     for role in ctx.author.roles:
-        if role.id == ROLE:
+        if role.id == MANAGER_ROLE_ID:
             admin_found = True
             session = Session()
             member = session.query(Member).filter(Member.discord_id == member.id).first()
@@ -162,6 +164,31 @@ async def invite(ctx, member: discord.Member, enable: bool):
                 await ctx.send_response(f"<@{member.discord_id}> removed from bluesky invited list")
             logging.debug(f"{ctx.author.name} added <@{member.discord_id}> to bluesky invited list")
             session.close()
+    if admin_found is False:
+        await ctx.send_response("You don't have permission to do that")
+
+
+@bot.slash_command(name="adminconfig", description="Magic command")
+async def adminconfig(ctx):
+    admin_found = False
+    for role in ctx.author.roles:
+        if role.id == MANAGER_ROLE_ID:
+            admin_found = True
+
+            session = Session()
+
+            for member in ctx.guild.members:
+                for role in member.roles:
+                    if role.id == VIP_ROLE_ID:
+                        member = session.query(Member).filter(Member.discord_id == member.id).first()
+                        member.is_vip = True
+                        session.commit()
+                    elif role.id == BLUESKY_ROLE_ID:
+                        member = session.query(Member).filter(Member.discord_id == member.id).first()
+                        member.is_invited = True
+                        session.commit()
+            session.close()
+            await ctx.send_response("Magic is done")
     if admin_found is False:
         await ctx.send_response("You don't have permission to do that")
 
