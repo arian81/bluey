@@ -159,8 +159,8 @@ async def invite(ctx, member: discord.Member, enable: bool):
             if enable:
                 await ctx.send_response(f"<@{member.discord_id}> added to invited list")
             else:
-                await ctx.send_response(f"<@{member.discord_id}> removed from invited list")
-            logging.debug(f"{ctx.author.name} added <@{member.discord_id}> to invited list")
+                await ctx.send_response(f"<@{member.discord_id}> removed from bluesky invited list")
+            logging.debug(f"{ctx.author.name} added <@{member.discord_id}> to bluesky invited list")
             session.close()
     if admin_found is False:
         await ctx.send_response("You don't have permission to do that")
