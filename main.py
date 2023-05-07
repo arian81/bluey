@@ -88,22 +88,22 @@ async def init(ctx):
 
 
 @bot.slash_command(name="vip", description="Add a member to the VIP list")
-async def vip(ctx, member: discord.Member, enable: bool):
+async def vip(ctx, discord_member: discord.Member, enable: bool):
     admin_found = False
     for role in ctx.author.roles:
         if role.id == MANAGER_ROLE_ID:
             admin_found = True
             session = Session()
-            member = session.query(Member).filter(Member.discord_id == member.id).first()
-            member.is_vip = enable
+            db_member = session.query(Member).filter(Member.discord_id == discord_member.id).first()
+            db_member.is_vip = enable
             session.commit()
             if enable:
-                member.add_roles(ctx.guild.get_role(VIP_ROLE_ID))
-                await ctx.send_response(f"<@{member.discord_id}> added to VIP list")
+                discord_member.add_roles(ctx.guild.get_role(VIP_ROLE_ID))
+                await ctx.send_response(f"<@{db_member.discord_id}> added to VIP list")
             else:
-                member.remove_roles(ctx.guild.get_role(VIP_ROLE_ID))
-                await ctx.send_response(f"<@{member.discord_id}> removed from VIP list")
-            logging.debug(f"{ctx.author.name} added <@{member.discord_id}> to VIP list")
+                discord_member.remove_roles(ctx.guild.get_role(VIP_ROLE_ID))
+                await ctx.send_response(f"<@{db_member.discord_id}> removed from VIP list")
+            logging.debug(f"{ctx.author.name} added <@{db_member.discord_id}> to VIP list")
             session.close()
     if admin_found is False:
         await ctx.send_response("You don't have permission to do that")
