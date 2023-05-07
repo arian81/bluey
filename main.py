@@ -226,7 +226,7 @@ async def waitlist_leaderboard(ctx):
             )
             session.close()
             embed = discord.Embed(title="Current Waitlist", color=0x4EA6E1)
-            for i in range(24):
+            for i in range(25):
                 embed.add_field(
                     name=f"{i+1}. {ctx.guild.get_member(members[i].discord_id).name}#{ctx.guild.get_member(members[i].discord_id).discriminator}",
                     value=f"Joined: {members[i].join_date.date()}\n VIP: {'✅' if members[i].is_vip else '❌'} Resume.CV: {'✅' if members[i].is_resumecv else '❌'}\n Messages sent: {members[i].message_count}",
