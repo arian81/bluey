@@ -98,10 +98,10 @@ async def vip(ctx, discord_member: discord.Member, enable: bool):
             db_member.is_vip = enable
             session.commit()
             if enable:
-                discord_member.add_roles(ctx.guild.get_role(VIP_ROLE_ID))
+                await discord_member.add_roles(ctx.guild.get_role(VIP_ROLE_ID))
                 await ctx.send_response(f"<@{db_member.discord_id}> added to VIP list")
             else:
-                discord_member.remove_roles(ctx.guild.get_role(VIP_ROLE_ID))
+                await discord_member.remove_roles(ctx.guild.get_role(VIP_ROLE_ID))
                 await ctx.send_response(f"<@{db_member.discord_id}> removed from VIP list")
             logging.debug(f"{ctx.author.name} added <@{db_member.discord_id}> to VIP list")
             session.close()
