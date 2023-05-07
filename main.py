@@ -152,6 +152,36 @@ async def waitlist(ctx):
     session.close()
 
 
+# only an admin should be able to run this command
+@bot.slash_command(name="position", description="Check a member's position on the waitlist", ephemeral=True)
+async def position(ctx, member: discord.Member):
+    admin_found = False
+    for role in ctx.author.roles:
+        if role.id == MANAGER_ROLE_ID:
+            admin_found = True
+            session = Session()
+            member = session.query(Member).filter(Member.discord_id == member.id).first()
+            if member is None:
+                await ctx.send_response("They are not in the database", ephemeral=True)
+            elif member.is_invited:
+                await ctx.send_response("They already have access to bluesky", ephemeral=True)
+            else:
+                members = (
+                    session.query(Member)
+                    .filter_by(is_invited=False)
+                    .order_by(
+                        desc(Member.is_vip), desc(Member.is_resumecv), Member.join_date, desc(Member.message_count)
+                    )
+                    .all()
+                )
+                position = members.index(member) + 1
+                await ctx.send_response(f"<@{member.discord_id}> is number {position} on the waitlist", ephemeral=True)
+                logging.debug(f"{ctx.author.name} checked <@{member.discord_id}>'s position on the waitlist")
+            session.close()
+    if admin_found is False:
+        await ctx.send_response("You don't have permission to do that", ephemeral=True)
+
+
 @bot.slash_command(name="invite", description="Set user as invited to bluesky")
 async def invite(ctx, member: discord.Member, enable: bool):
     admin_found = False
