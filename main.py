@@ -211,6 +211,33 @@ async def waitlist_position(ctx, position: int):
         await ctx.send_response("You don't have permission to do that", ephemeral=True)
 
 
+@bot.slash_command(name="waitlist_leaderboard", description="Shows the waitlist leaderboard", ephemeral=True)
+async def waitlist_leaderboard(ctx):
+    admin_found = False
+    for role in ctx.author.roles:
+        if role.id == MANAGER_ROLE_ID:
+            admin_found = True
+            session = Session()
+            members = (
+                session.query(Member)
+                .filter_by(is_invited=False)
+                .order_by(desc(Member.is_vip), desc(Member.is_resumecv), Member.join_date, desc(Member.message_count))
+                .all()
+            )
+            session.close()
+            embed = discord.Embed(title="Current Waitlist", color=0x4EA6E1)
+            for i in range(49):
+                embed.add_field(
+                    name=f"{i+1}. {ctx.guild.get_member(members[i].discord_id).name}#{ctx.guild.get_member(members[i].discord_id).discriminator}",
+                    value=f"Joined: {members[i].join_date.date()}\n VIP: {'✅' if members[i].is_vip else '❌'} Resume.CV: {'✅' if members[i].is_resumecv else '❌'}\n Messages sent: {members[i].message_count}",
+                    inline=False,
+                )
+            await ctx.send_response(embed=embed, ephemeral=True)
+            logging.debug(f"{ctx.author.name} checked the waitlist leaderboard")
+    if admin_found is False:
+        await ctx.send_response("You don't have permission to do that", ephemeral=True)
+
+
 @bot.slash_command(name="invite", description="Set user as invited to bluesky")
 async def invite(ctx, discord_member: discord.Member, enable: bool):
     admin_found = False
