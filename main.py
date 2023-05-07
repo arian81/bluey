@@ -110,20 +110,20 @@ async def vip(ctx, discord_member: discord.Member, enable: bool):
 
 
 @bot.slash_command(name="resumecv", description="Add a member to the resume.cv list")
-async def resumecv(ctx, member: discord.Member, enable: bool):
+async def resumecv(ctx, discord_member: discord.Member, enable: bool):
     admin_found = False
     for role in ctx.author.roles:
         if role.id == MANAGER_ROLE_ID:
             admin_found = True
             session = Session()
-            member = session.query(Member).filter(Member.discord_id == member.id).first()
-            member.is_resumecv = enable
+            db_member = session.query(Member).filter(Member.discord_id == discord_member.id).first()
+            db_member.is_resumecv = enable
             session.commit()
             if enable:
-                await ctx.send_response(f"<@{member.discord_id}> added to resume.cv list")
+                await ctx.send_response(f"<@{db_member.discord_id}> added to resume.cv list")
             else:
-                await ctx.send_response(f"<@{member.discord_id}> removed from resume.cv list")
-            logging.debug(f"{ctx.author.name} added <@{member.discord_id}> to resume.cv list")
+                await ctx.send_response(f"<@{db_member.discord_id}> removed from resume.cv list")
+            logging.debug(f"{ctx.author.name} added <@{db_member.discord_id}> to resume.cv list")
             session.close()
     if admin_found is False:
         await ctx.send_response("You don't have permission to do that")
@@ -156,16 +156,16 @@ async def waitlist(ctx):
 
 # only an admin should be able to run this command
 @bot.slash_command(name="user_position", description="Check a member's position on the waitlist", ephemeral=True)
-async def position(ctx, member: discord.Member):
+async def position(ctx, discord_member: discord.Member):
     admin_found = False
     for role in ctx.author.roles:
         if role.id == MANAGER_ROLE_ID:
             admin_found = True
             session = Session()
-            member = session.query(Member).filter(Member.discord_id == member.id).first()
-            if member is None:
+            db_member = session.query(Member).filter(Member.discord_id == discord_member.id).first()
+            if db_member is None:
                 await ctx.send_response("They are not in the database", ephemeral=True)
-            elif member.is_invited:
+            elif db_member.is_invited:
                 await ctx.send_response("They already have access to bluesky", ephemeral=True)
             else:
                 members = (
@@ -176,9 +176,11 @@ async def position(ctx, member: discord.Member):
                     )
                     .all()
                 )
-                position = members.index(member) + 1
-                await ctx.send_response(f"<@{member.discord_id}> is number {position} on the waitlist", ephemeral=True)
-                logging.debug(f"{ctx.author.name} checked <@{member.discord_id}>'s position on the waitlist")
+                position = members.index(db_member) + 1
+                await ctx.send_response(
+                    f"<@{db_member.discord_id}> is number {position} on the waitlist", ephemeral=True
+                )
+                logging.debug(f"{ctx.author.name} checked <@{db_member.discord_id}>'s position on the waitlist")
             session.close()
     if admin_found is False:
         await ctx.send_response("You don't have permission to do that", ephemeral=True)
@@ -210,20 +212,20 @@ async def waitlist_position(ctx, position: int):
 
 
 @bot.slash_command(name="invite", description="Set user as invited to bluesky")
-async def invite(ctx, member: discord.Member, enable: bool):
+async def invite(ctx, discord_member: discord.Member, enable: bool):
     admin_found = False
     for role in ctx.author.roles:
         if role.id == MANAGER_ROLE_ID:
             admin_found = True
             session = Session()
-            member = session.query(Member).filter(Member.discord_id == member.id).first()
-            member.is_invited = enable
+            db_member = session.query(Member).filter(Member.discord_id == discord_member.id).first()
+            db_member.is_invited = enable
             session.commit()
             if enable:
-                await ctx.send_response(f"<@{member.discord_id}> added to invited list")
+                await ctx.send_response(f"<@{db_member.discord_id}> added to invited list")
             else:
-                await ctx.send_response(f"<@{member.discord_id}> removed from bluesky invited list")
-            logging.debug(f"{ctx.author.name} added <@{member.discord_id}> to bluesky invited list")
+                await ctx.send_response(f"<@{db_member.discord_id}> removed from bluesky invited list")
+            logging.debug(f"{ctx.author.name} added <@{db_member.discord_id}> to bluesky invited list")
             session.close()
     if admin_found is False:
         await ctx.send_response("You don't have permission to do that")
