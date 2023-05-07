@@ -98,8 +98,10 @@ async def vip(ctx, member: discord.Member, enable: bool):
             member.is_vip = enable
             session.commit()
             if enable:
+                member.add_roles(ctx.guild.get_role(VIP_ROLE_ID))
                 await ctx.send_response(f"<@{member.discord_id}> added to VIP list")
             else:
+                member.remove_roles(ctx.guild.get_role(VIP_ROLE_ID))
                 await ctx.send_response(f"<@{member.discord_id}> removed from VIP list")
             logging.debug(f"{ctx.author.name} added <@{member.discord_id}> to VIP list")
             session.close()
@@ -153,7 +155,7 @@ async def waitlist(ctx):
 
 
 # only an admin should be able to run this command
-@bot.slash_command(name="position", description="Check a member's position on the waitlist", ephemeral=True)
+@bot.slash_command(name="user_position", description="Check a member's position on the waitlist", ephemeral=True)
 async def position(ctx, member: discord.Member):
     admin_found = False
     for role in ctx.author.roles:
@@ -182,6 +184,31 @@ async def position(ctx, member: discord.Member):
         await ctx.send_response("You don't have permission to do that", ephemeral=True)
 
 
+# only an admin can run this command
+@bot.slash_command(name="waitlist_position", description="Check user at a waitlist position", ephemeral=True)
+async def waitlist_position(ctx, position: int):
+    admin_found = False
+    for role in ctx.author.roles:
+        if role.id == MANAGER_ROLE_ID:
+            admin_found = True
+            session = Session()
+            members = (
+                session.query(Member)
+                .filter_by(is_invited=False)
+                .order_by(desc(Member.is_vip), desc(Member.is_resumecv), Member.join_date, desc(Member.message_count))
+                .all()
+            )
+            if position > len(members):
+                await ctx.send_response("There are not that many people on the waitlist", ephemeral=True)
+            else:
+                member = members[position - 1]
+                await ctx.send_response(f"<@{member.discord_id}> is number {position} on the waitlist", ephemeral=True)
+                logging.debug(f"{ctx.author.name} checked <@{member.discord_id}>'s position on the waitlist")
+            session.close()
+    if admin_found is False:
+        await ctx.send_response("You don't have permission to do that", ephemeral=True)
+
+
 @bot.slash_command(name="invite", description="Set user as invited to bluesky")
 async def invite(ctx, member: discord.Member, enable: bool):
     admin_found = False
@@ -202,7 +229,7 @@ async def invite(ctx, member: discord.Member, enable: bool):
         await ctx.send_response("You don't have permission to do that")
 
 
-@bot.slash_command(name="adminconfig", description="Magic command")
+@bot.slash_command(name="syncroles", description="Syncs roles with database")
 async def adminconfig(ctx):
     admin_found = False
     for role in ctx.author.roles:
@@ -222,7 +249,7 @@ async def adminconfig(ctx):
                         bluesky_member.is_invited = True
                         session.commit()
             session.close()
-            await ctx.send_response("Magic is done")
+            await ctx.send_response("Sync is done")
     if admin_found is False:
         await ctx.send_response("You don't have permission to do that")
 
