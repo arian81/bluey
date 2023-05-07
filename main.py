@@ -211,7 +211,7 @@ async def waitlist_position(ctx, position: int):
         await ctx.send_response("You don't have permission to do that", ephemeral=True)
 
 
-@bot.slash_command(name="waitlist_leaderboard", description="Shows the waitlist leaderboard", ephemeral=True)
+@bot.slash_command(name="current_waitlist", description="Shows the waitlist leaderboard", ephemeral=True)
 async def waitlist_leaderboard(ctx):
     admin_found = False
     for role in ctx.author.roles:
