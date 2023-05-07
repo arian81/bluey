@@ -142,8 +142,8 @@ async def waitlist(ctx):
     else:
         members = (
             session.query(Member)
-            .filter_by(is_vip=False, is_resumecv=False, is_invited=False)
-            .order_by(Member.join_date, desc(Member.message_count))
+            .filter_by(is_invited=False)
+            .order_by(desc(Member.is_vip), desc(Member.is_resumecv), Member.join_date, desc(Member.message_count))
             .all()
         )
         position = members.index(member) + 1
