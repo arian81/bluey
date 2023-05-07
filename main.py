@@ -189,6 +189,26 @@ async def adminconfig(ctx):
         await ctx.send_response("You don't have permission to do that")
 
 
+@bot.slash_command(name="waitlist_leaderboard", description="Shows the waitlist leaderboard")
+async def waitlist_leaderboard(ctx):
+    session = Session()
+    members = (
+        session.query(Member)
+        .filter_by(is_invited=False)
+        .order_by(desc(Member.is_vip), desc(Member.is_resumecv), Member.join_date, desc(Member.message_count))
+        .all()
+    )
+    session.close()
+    embed = discord.Embed(title="Current Waitlist", color=0x4EA6E1)
+    for index, member in enumerate(members):
+        embed.add_field(
+            name=f"{index+1}. {ctx.guild.get_member(member.discord_id).name}#{ctx.guild.get_member(member.discord_id).discriminator}",
+            value=f"Joined: {member.join_date.date()}\n VIP: {'✅' if member.is_vip else '❌'} Resume.CV: {'✅' if member.is_resumecv else '❌'}\n Messages sent: {member.message_count}",
+            inline=False,
+        )
+    await ctx.send_response(embed=embed)
+
+
 @bot.event
 async def on_member_join(member):
     session = Session()
