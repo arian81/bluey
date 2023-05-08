@@ -172,7 +172,7 @@ async def position(ctx, discord_member: discord.Member):
                     session.query(Member)
                     .filter_by(is_invited=False)
                     .order_by(
-                        desc(Member.is_vip), desc(Member.is_resumecv), Member.join_date, desc(Member.message_count)
+                        desc(Member.is_vip), desc(Member.is_resumecv), desc(Member.message_count), Member.join_date
                     )
                     .all()
                 )
@@ -197,7 +197,7 @@ async def waitlist_position(ctx, position: int):
             members = (
                 session.query(Member)
                 .filter_by(is_invited=False)
-                .order_by(desc(Member.is_vip), desc(Member.is_resumecv), Member.join_date, desc(Member.message_count))
+                .order_by(desc(Member.is_vip), desc(Member.is_resumecv), desc(Member.message_count), Member.join_date)
                 .all()
             )
             if position > len(members):
@@ -221,7 +221,7 @@ async def waitlist_leaderboard(ctx):
             members = (
                 session.query(Member)
                 .filter_by(is_invited=False)
-                .order_by(desc(Member.is_vip), desc(Member.is_resumecv), Member.join_date, desc(Member.message_count))
+                .order_by(desc(Member.is_vip), desc(Member.is_resumecv), desc(Member.message_count), Member.join_date)
                 .all()
             )
             session.close()
