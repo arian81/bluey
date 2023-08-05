@@ -152,10 +152,10 @@ async def waitlist(ctx):
             session.query(Member)
             .filter_by(is_invited=False)
             .order_by(
-                desc(case([(Member.is_resumecv, 2)], else_=1)),  # resumecv users with higher priority
-                desc(Member.message_count * case([(Member.is_vip, 2)], else_=1)),  # VIP users with higher message count
-                desc(Member.message_count),  # regular users by message count
-                Member.join_date,  # join date for tie-breaking
+                desc(case((Member.is_vi is True, 2), else_=1)),
+                desc(Member.message_count * case((Member.is_vip, 2), else_=1)),
+                desc(Member.message_count),
+                Member.join_date,
             )
             .all()
         )
@@ -191,8 +191,8 @@ async def position(ctx, discord_member: discord.Member):
                     session.query(Member)
                     .filter_by(is_invited=False)
                     .order_by(
-                        desc(case([(Member.is_resumecv, 2)], else_=1)),
-                        desc(Member.message_count * case([(Member.is_vip, 2)], else_=1)),
+                        desc(case((Member.is_vi is True, 2), else_=1)),
+                        desc(Member.message_count * case((Member.is_vip, 2), else_=1)),
                         desc(Member.message_count),
                         Member.join_date,
                     )
@@ -226,8 +226,8 @@ async def waitlist_position(ctx, position: int):
                 session.query(Member)
                 .filter_by(is_invited=False)
                 .order_by(
-                    desc(case([(Member.is_resumecv, 2)], else_=1)),
-                    desc(Member.message_count * case([(Member.is_vip, 2)], else_=1)),
+                    desc(case((Member.is_vi is True, 2), else_=1)),
+                    desc(Member.message_count * case((Member.is_vip, 2), else_=1)),
                     desc(Member.message_count),
                     Member.join_date,
                 )
@@ -261,8 +261,8 @@ async def waitlist_leaderboard(ctx):
                 session.query(Member)
                 .filter_by(is_invited=False)
                 .order_by(
-                    desc(case([(Member.is_resumecv, 2)], else_=1)),
-                    desc(Member.message_count * case([(Member.is_vip, 2)], else_=1)),
+                    desc(case((Member.is_vi is True, 2), else_=1)),
+                    desc(Member.message_count * case((Member.is_vip, 2), else_=1)),
                     desc(Member.message_count),
                     Member.join_date,
                 )
