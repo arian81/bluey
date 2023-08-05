@@ -1,5 +1,5 @@
 import discord
-from sqlalchemy import String, create_engine, Column, DateTime, Boolean, BigInteger, desc
+from sqlalchemy import String, create_engine, Column, DateTime, Boolean, BigInteger, desc, case
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 import logging
@@ -142,10 +142,21 @@ async def waitlist(ctx):
     elif member.is_invited:
         await ctx.send_response("You already have access to bluesky", ephemeral=True)
     else:
+        # members = (
+        #     session.query(Member)
+        #     .filter_by(is_invited=False)
+        #     .order_by(desc(Member.is_vip), desc(Member.is_resumecv), desc(Member.message_count), Member.join_date)
+        #     .all()
+        # )
         members = (
             session.query(Member)
             .filter_by(is_invited=False)
-            .order_by(desc(Member.is_vip), desc(Member.is_resumecv), desc(Member.message_count), Member.join_date)
+            .order_by(
+                desc(case([(Member.is_resumecv, 2)], else_=1)),  # resumecv users with higher priority
+                desc(Member.message_count * case([(Member.is_vip, 2)], else_=1)),  # VIP users with higher message count
+                desc(Member.message_count),  # regular users by message count
+                Member.join_date,  # join date for tie-breaking
+            )
             .all()
         )
         position = members.index(member) + 1
@@ -168,11 +179,22 @@ async def position(ctx, discord_member: discord.Member):
             elif db_member.is_invited:
                 await ctx.send_response("They already have access to bluesky", ephemeral=True)
             else:
+                # members = (
+                #     session.query(Member)
+                #     .filter_by(is_invited=False)
+                #     .order_by(
+                #         desc(Member.is_vip), desc(Member.is_resumecv), desc(Member.message_count), Member.join_date
+                #     )
+                #     .all()
+                # )
                 members = (
                     session.query(Member)
                     .filter_by(is_invited=False)
                     .order_by(
-                        desc(Member.is_vip), desc(Member.is_resumecv), desc(Member.message_count), Member.join_date
+                        desc(case([(Member.is_resumecv, 2)], else_=1)),
+                        desc(Member.message_count * case([(Member.is_vip, 2)], else_=1)),
+                        desc(Member.message_count),
+                        Member.join_date,
                     )
                     .all()
                 )
@@ -194,10 +216,21 @@ async def waitlist_position(ctx, position: int):
         if role.id == MANAGER_ROLE_ID:
             admin_found = True
             session = Session()
+            # members = (
+            #     session.query(Member)
+            #     .filter_by(is_invited=False)
+            #     .order_by(desc(Member.is_vip), desc(Member.is_resumecv), desc(Member.message_count), Member.join_date)
+            #     .all()
+            # )
             members = (
                 session.query(Member)
                 .filter_by(is_invited=False)
-                .order_by(desc(Member.is_vip), desc(Member.is_resumecv), desc(Member.message_count), Member.join_date)
+                .order_by(
+                    desc(case([(Member.is_resumecv, 2)], else_=1)),
+                    desc(Member.message_count * case([(Member.is_vip, 2)], else_=1)),
+                    desc(Member.message_count),
+                    Member.join_date,
+                )
                 .all()
             )
             if position > len(members):
@@ -218,10 +251,21 @@ async def waitlist_leaderboard(ctx):
         if role.id == MANAGER_ROLE_ID:
             admin_found = True
             session = Session()
+            # members = (
+            #     session.query(Member)
+            #     .filter_by(is_invited=False)
+            #     .order_by(desc(Member.is_vip), desc(Member.is_resumecv), desc(Member.message_count), Member.join_date)
+            #     .all()
+            # )
             members = (
                 session.query(Member)
                 .filter_by(is_invited=False)
-                .order_by(desc(Member.is_vip), desc(Member.is_resumecv), desc(Member.message_count), Member.join_date)
+                .order_by(
+                    desc(case([(Member.is_resumecv, 2)], else_=1)),
+                    desc(Member.message_count * case([(Member.is_vip, 2)], else_=1)),
+                    desc(Member.message_count),
+                    Member.join_date,
+                )
                 .all()
             )
             session.close()
