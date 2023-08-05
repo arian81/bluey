@@ -152,7 +152,7 @@ async def waitlist(ctx):
             session.query(Member)
             .filter_by(is_invited=False)
             .order_by(
-                desc(case((Member.is_vi is True, 2), else_=1)),
+                desc(case((Member.is_resumecv is True, 2), else_=1)),
                 desc(Member.message_count * case((Member.is_vip, 2), else_=1)),
                 desc(Member.message_count),
                 Member.join_date,
@@ -191,7 +191,7 @@ async def position(ctx, discord_member: discord.Member):
                     session.query(Member)
                     .filter_by(is_invited=False)
                     .order_by(
-                        desc(case((Member.is_vi is True, 2), else_=1)),
+                        desc(case((Member.is_resumecv is True, 2), else_=1)),
                         desc(Member.message_count * case((Member.is_vip, 2), else_=1)),
                         desc(Member.message_count),
                         Member.join_date,
@@ -226,7 +226,7 @@ async def waitlist_position(ctx, position: int):
                 session.query(Member)
                 .filter_by(is_invited=False)
                 .order_by(
-                    desc(case((Member.is_vi is True, 2), else_=1)),
+                    desc(case((Member.is_resumecv is True, 2), else_=1)),
                     desc(Member.message_count * case((Member.is_vip, 2), else_=1)),
                     desc(Member.message_count),
                     Member.join_date,
@@ -261,7 +261,7 @@ async def waitlist_leaderboard(ctx):
                 session.query(Member)
                 .filter_by(is_invited=False)
                 .order_by(
-                    desc(case((Member.is_vi is True, 2), else_=1)),
+                    desc(case((Member.is_resumecv is True, 2), else_=1)),
                     desc(Member.message_count * case((Member.is_vip, 2), else_=1)),
                     desc(Member.message_count),
                     Member.join_date,
